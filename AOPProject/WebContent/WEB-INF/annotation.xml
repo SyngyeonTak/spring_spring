@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- bean을 fm대로 등록하다보면, bean설정파일이 너무 많아지므로, 관리하기 힘들다..
+	따라서 스프링그룹에서는 설정파일을 간소화하기 위해 개발방법을 구상하고 있다.
+	앞으로 스프링이 버전이 올라갈수록 설정 정보는 더욱 간소화될 예정이다. -->
+	
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"></bean>
+	
+	<!-- 컨트롤러임을 표시한 클래스가 있다면, 그 클래스는 자동으로 메모리에
+	내부적으로 올리겠다..즉, 개발자가 여기에 bean으로 등록하지 않아도... -->
+	<context:component-scan base-package="test.">
+	</context:component-scan>
+</beans>
