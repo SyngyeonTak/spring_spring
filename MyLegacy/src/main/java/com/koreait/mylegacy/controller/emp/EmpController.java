@@ -60,7 +60,7 @@ public class EmpController {
 		//서비스에게 사원 등록 요청!!!
 		emp.setDept(dept);//emp와 부서를 합체!!
 		
-		int result = empService.regist(emp);
+		int result = mybatisEmpService.insert(emp);
 		logger.debug("등록결과 "+result);
 		return "redirect:/emp/list";
 	}

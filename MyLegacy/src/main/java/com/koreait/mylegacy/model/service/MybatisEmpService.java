@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.koreait.mylegacy.exception.RegistException;
 import com.koreait.mylegacy.model.dao.MybatisDeptDAO;
 import com.koreait.mylegacy.model.dao.MybatisEmpDAO;
 import com.koreait.mylegacy.model.domain.Emp;
@@ -42,8 +43,19 @@ public class MybatisEmpService {
 		mybatisDeptDAO.setSqlSession(sqlSession);
 		
 		//트랜잭션 대상
-		mybatisEmpDAO.insert(emp);
-		mybatisDeptDAO.insert(emp.getDept());
+		//아래의 두 DML 메서드 대상으로 commit/rollback해야 할 코드 라인은??
+		
+		try {
+			mybatisEmpDAO.insert(emp);
+			mybatisDeptDAO.insert(emp.getDept());
+			sqlSession.commit();
+			result = 1;
+		} catch (RegistException e) {
+			e.printStackTrace();
+			sqlSession.rollback();
+		}finally {
+			manager.close(sqlSession);
+		}
 		
 		
 		manager.close(sqlSession);
