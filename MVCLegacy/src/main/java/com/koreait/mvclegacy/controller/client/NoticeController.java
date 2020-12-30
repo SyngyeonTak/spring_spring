@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,7 +32,7 @@ public class NoticeController {
 	@RequestMapping(value="/notice/regist", method=RequestMethod.POST)
 	public String regist(Notice notice) {
 		//자동으로 데이터값이 vo에 채워진다.
-		noticeService.insert(notice);
+		noticeService.insert(notice);//여기서 예외가 발생하면 실행부는 아래에 정의한 예외핸들러를 실행시킨다.
 		
 		return "redirect:/client/notice/list";
 	}
@@ -64,17 +65,9 @@ public class NoticeController {
 	@RequestMapping(value="/notice/edit", method=RequestMethod.POST)
 	public ModelAndView edit(Notice notice) {
 		ModelAndView mav = new ModelAndView();
-		try {
-			noticeService.update(notice);
-			//mav.addObject("msg", "등록성공");
-			mav.setViewName("redirect:/client/notice/detail?notice_id="+notice.getNotice_id());
+		noticeService.update(notice);
+		mav.setViewName("redirect:/client/notice/detail?notice_id="+notice.getNotice_id());
 			
-		} catch (DMLException e) {
-			//mav.addObject("msg", "등록실패");
-			mav.addObject("msg", e.getMessage());
-			mav.setViewName("message/result");
-			e.printStackTrace();
-		}
 		
 		return mav;
 	}
@@ -86,6 +79,20 @@ public class NoticeController {
 		return "redirect:/client/notice/list";
 	}
 	
+	//스프링의 컨트롤러의 요청 처리 메서드 중 어느 하나라도 예외가 발생하면, 그 예외를 처리할 수 있는 
+	//별도의 메서드가 지원된다.. 어노테이션에 명시한 예외만 잡아낸다.
+	@ExceptionHandler(DMLException.class)
+	public ModelAndView handlerException(DMLException e) {
+		ModelAndView mav = new ModelAndView();
+		
+		//어떤 내용을 담을지?? 에러 메시지를 담자!!
+		mav.addObject("msg", e.getMessage());
+		
+		//어느 페이지를 보여줄지?? message/result.jsp
+		mav.setViewName("message/result");
+		
+		return mav;
+	}
 }
 
 
