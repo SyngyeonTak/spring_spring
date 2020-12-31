@@ -1,13 +1,13 @@
-package com.koreait.fashionshop.model.product.repository;
+package com.koreait.fashionshop.model.product.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import com.koreait.fashionshop.model.domain.TopCategory;
 
-@Repository
-public interface TopCategoryDAO {
+@Service
+public interface TopCategoryService {
 	//CRUD
 	public List selectAll();
 	public TopCategory select(int topcategory_id);
