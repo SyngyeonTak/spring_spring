@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.koreait.fashionshop.common.FileManager;
 import com.koreait.fashionshop.model.domain.Product;
-import com.koreait.fashionshop.model.domain.TopCategory;
 
 @Service
 public interface ProductService {
@@ -13,7 +13,7 @@ public interface ProductService {
 		public List selectAll();
 		public List selectByAll(int subcategory_id);
 		public Product select(int product_id);
-		public void regist(Product product);
+		public void regist(FileManager fileManager, Product product);
 		public void update(Product product);
 		public void delete(int product_id);
 }
