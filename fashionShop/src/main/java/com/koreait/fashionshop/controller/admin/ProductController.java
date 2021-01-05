@@ -1,8 +1,5 @@
 package com.koreait.fashionshop.controller.admin;
 
-import java.io.File;
-
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -11,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,7 +16,9 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.koreait.fashionshop.common.FileManager;
+import com.koreait.fashionshop.exception.ProductRegistException;
 import com.koreait.fashionshop.model.domain.Product;
+import com.koreait.fashionshop.model.domain.Psize;
 import com.koreait.fashionshop.model.domain.SubCategory;
 import com.koreait.fashionshop.model.product.service.ProductService;
 import com.koreait.fashionshop.model.product.service.SubCategoryService;
@@ -109,7 +109,9 @@ public class ProductController implements ServletContextAware{
 	//상품 목록
 	@RequestMapping(value="/admin/product/list", method=RequestMethod.GET)
 	public ModelAndView list() {
+		List productList = productService.selectAll();
 		ModelAndView mav = new ModelAndView("admin/product/product_list");
+		mav.addObject("productList", productList);
 		
 		return mav;
 	}
@@ -121,14 +123,19 @@ public class ProductController implements ServletContextAware{
 	}
 	
 	//상품 등록
-	@RequestMapping(value="/admin/product/regist", method=RequestMethod.POST)
+	@RequestMapping(value="/admin/product/regist", method=RequestMethod.POST,
+		produces="text/html;charset=utf-8")
 	@ResponseBody
 	public String registProduct(Product product) {
-		logger.debug("하위 카테고리 "+product.getSubcategory_id());
-		logger.debug("상품명"+product.getProduct_name());
-		logger.debug("가격"+product.getPrice());
-		logger.debug("브랜드"+product.getBrand());
-		logger.debug("상세내용"+product.getDetail());
+		logger.debug("하위 카테고리 "+product.getSubCategory().getSubcategory_id());
+		logger.debug("상품명 "+product.getProduct_name());
+		logger.debug("가격 "+product.getPrice());
+		logger.debug("브랜드 "+product.getBrand());
+		logger.debug("상세내용 "+product.getDetail());
+		
+		for (Psize psize : product.getPsize()) { 
+			logger.debug(psize.getFit());
+		}
 		/*
 		logger.debug("업로드 이미지명"+product.getRepImg().getOriginalFilename());
 		
@@ -138,9 +145,7 @@ public class ProductController implements ServletContextAware{
 		}
 		*/
 		
-		logger.debug("insert하기전 상품의 product_id: "+product.getProduct_id());
 		productService.regist(fileManager, product);//상품 등록
-		logger.debug("insert하고 상품의 product_id: "+product.getProduct_id());
 		
 		//상품의 product_id를 이용하여, 대표이미지명을 결정 짓자
 	
@@ -149,13 +154,14 @@ public class ProductController implements ServletContextAware{
 		//파일명이 생성되었으면, 이제 저장을 해보자!!
 		//실제 물리적 경로를 얻어오려면, servletContext가 보유한 getRealPath()메서드가 필요하다.
 		
+		StringBuilder sb  = new StringBuilder();
+		sb.append("{");
+		sb.append("\"result\":1,");
+		sb.append("\"msg\":\"상품 등록 성공\"");
+
+		sb.append("}");
 		
-		/*
-		 * for (int i = 0; i < product.getFit().length; i++) { String fit =
-		 * product.getFit()[i]; logger.debug("지원 사이즈는 "+fit); }
-		 */
-		
-		return "hahaha";
+		return sb.toString();
 	}
 
 	
@@ -168,7 +174,20 @@ public class ProductController implements ServletContextAware{
 	//상품 삭제
 	
 	//예외처리
-	//위의 메서드 중에서 하나라도 예외가 발생하면, 
+	//위의 메서드 중에서 하나라도 예외가 발생하면, 아래의 핸들러가 동작
+	@ExceptionHandler(ProductRegistException.class)
+	@ResponseBody
+	public String handleException(ProductRegistException e) {
+		StringBuilder sb  = new StringBuilder();
+		sb.append("{");
+		sb.append("\"result\":0,");
+		sb.append("\"msg\":\""+e.getMessage()+"\"");
+
+		sb.append("}");
+		
+		return sb.toString();
+	}
+	
 }
 
 

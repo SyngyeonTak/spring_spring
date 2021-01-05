@@ -1,4 +1,9 @@
+<%@page import="com.koreait.fashionshop.model.domain.Product"%>
+<%@page import="java.util.List"%>
 <%@page contentType="text/html; charset=utf-8"%>
+<%
+	List<Product> productList = (List)request.getAttribute("productList");
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,21 +27,27 @@ $(function(){
 <p>
 	<table>
 	  <tr>
-	    <th>First Name</th>
-	    <th>Last Name</th>
-	    <th>Points</th>
-	    <th>Points</th>
-	    <th>Points</th>
+	    <th>No</th>
+	    <th>이미지</th>
+	    <th>카테고리명</th>
+	    <th>상품명</th>
+	    <th>가격</th>
+	    <th>브랜드</th>
 	  </tr>
+	  
+	  <%for(int i=0; i<productList.size(); i++){ %>
+		  <%Product product = productList.get(i); %>
+		  <tr>
+		    <td><%=product.getProduct_id() %></td>
+		    <td><img src="/resources/data/basic/<%=product.getProduct_id()%>.<%=product.getFilename()%>" width="80px"></td>
+		    <td><%=product.getSubCategory().getSubcategory_id() %></td>
+		    <td><%=product.getProduct_name()%></td>
+		    <td><%=product.getPrice() %></td>
+		    <td><%=product.getBrand()%></td>
+		  </tr>
+	  <%} %>
 	  <tr>
-	    <td>Jill</td>
-	    <td>Smith</td>
-	    <td>50</td>
-	    <td>50</td>
-	    <td>50</td>
-	  </tr>
-	  <tr>
-	  	<td colspan="5">
+	  	<td colspan="6">
 	  		<button>상품등록</button>
 	  	</td>
 	  </tr>

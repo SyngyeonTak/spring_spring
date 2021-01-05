@@ -71,7 +71,7 @@ input[type=button]:hover {
 </style>
 <script type="text/javascript">
 var uploadFiles=[];//서버에 전송할 미리보기 이미지 목록
-var psizeArray=[];//유저가 선택한 사이즈를 담는 배열
+var psize=[];//유저가 선택한 사이즈를 담는 배열/ 서버에 보낼 파라미터 명
 $(function(){
 	CKEDITOR.replace("detail");	
 	
@@ -131,9 +131,22 @@ $(function(){
 	
 	//체크 박스 이베느 구현
 	$("input[type='checkbox']").on("click", function(e){
-		var ch = e.tartget;//이벤트를 일으킨 주체컴포넌트 즉 체크박스
-		alert($(ch).val());
-	})
+		var ch = e.target;//이벤트를 일으킨 주체컴포넌트 즉 체크박스
+		//체크박스의 길이 얻기
+		var ch = $("input[name='size']");
+		var len = $(ch).length;
+		
+		//모든 배열 초기화
+		psize=[];
+		for(var i=0; i<len; i++){
+			//만일 체크가 되어 있다면, 기존 배열을 모두 지우고, 체크된 체크 박스 값만 배열에 넣자!!
+			if($($(ch)[i]).is(":checked")){
+				psize.push($($(ch)[i]).val());
+			}
+			//console.log(i,"번째 체크박스 상태는 ",$($(ch)[i]).is(":checked"));
+		}
+		console.log("서버에 전송할 사이즈 배열의 구성은 ", psize);
+	});
 
 });
 
@@ -213,15 +226,31 @@ function regist(){
 	
 	//폼데이터에 에디터의 값 추가하기!!
 	formData.append("detail", CKEDITOR.instances["detail"].getData());
+	for(var i=0; i<psize.length;i++){
+		formData.append("psize["+i+"].fit", psize[i]);
+	}
 																		
+	/* 
+	input type = "checkbox" name="test" value="banana"
+	input type = "checkbox" name="test" value="apple"
+	input type = "checkbox" name="test" value="orange"
+	*/
+	
 	$.ajax({
 		url: "/admin/product/regist",
 		type: "post",
 		data: formData,
 		contentType: false, /* false일 경우 multipart/form-data로 간주 */
 		processData:false, /* false일 경우 query-string(get방식)으로 전송하지 않음, 이미지라서 post로 해야한다.*/
-		success: function(result){
-			alert(result);
+		success: function(responseData){
+			var json = JSON.parse(responseData);
+			console.log(json);
+			if(json.result==1){
+				alert(json.msg);
+				location.href="/admin/product/list";
+			}else{
+				alert(json.msg);				
+			}
 		}
 	});
 	
@@ -250,7 +279,8 @@ function regist(){
   		<%} %>
   	</select>
   	
-  	<select name="subcategory_id">
+  	<!-- product has a subCategory -->
+  	<select name="subCategory.subcategory_id">
   		<option>하위카테고리 선택</option>
   	</select>
     <input type="text" name="product_name" placeholder="상품명">
@@ -266,12 +296,12 @@ function regist(){
 	
 	<!-- 지원 사이즈 선택  -->
 	<p>
-		XS<input type="checkbox" name="psize[0].fit" value="XS">
-		S<input type="checkbox" name="psize[1].fit" value="S">
-		M<input type="checkbox" name="psize[2].fit" value="M">
-		L<input type="checkbox" name="psize[3].fit" value="L">
-		XL<input type="checkbox" name="psize[4].fit" value="XL">
-		XXL<input type="checkbox" name="psize[5].fit" value="XXL">
+		XS<input type="checkbox" name="size" value="XS">
+		S<input type="checkbox" name="size" value="S">
+		M<input type="checkbox" name="size" value="M">
+		L<input type="checkbox" name="size" value="L">
+		XL<input type="checkbox" name="size" value="XL">
+		XXL<input type="checkbox" name="size" value="XXL">
 	</p>
 	
 	<p>

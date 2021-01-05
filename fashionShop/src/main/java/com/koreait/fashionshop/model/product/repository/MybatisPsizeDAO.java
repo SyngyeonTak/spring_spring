@@ -6,6 +6,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.koreait.fashionshop.exception.ProductRegistException;
 import com.koreait.fashionshop.model.domain.Psize;
 
 @Repository
@@ -32,18 +33,21 @@ public class MybatisPsizeDAO implements PsizeDAO{
 	}
 
 	@Override
-	public void insert(Psize psize) {
-		sessionTemplate.insert("Psize.insert", psize);
+	public void insert(Psize psize) throws ProductRegistException{
+		int result = sessionTemplate.insert("Psize.insert", psize);
+		if(result == 0) {
+			throw new ProductRegistException("psize 테이블에 입력 실패");
+		}
 	}
 
 	@Override
-	public void delete(int psize_id) {
+	public void delete(int psize_id) throws ProductRegistException{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void updata(Psize psize) {
+	public void updata(Psize psize) throws ProductRegistException{
 		// TODO Auto-generated method stub
 		
 	}

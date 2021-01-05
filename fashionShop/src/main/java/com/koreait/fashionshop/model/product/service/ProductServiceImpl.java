@@ -1,6 +1,7 @@
 package com.koreait.fashionshop.model.product.service;
 
 import java.io.File;
+
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.koreait.fashionshop.common.FileManager;
+import com.koreait.fashionshop.exception.ProductRegistException;
 import com.koreait.fashionshop.model.domain.Color;
 import com.koreait.fashionshop.model.domain.Image;
 import com.koreait.fashionshop.model.domain.Product;
@@ -37,8 +39,7 @@ public class ProductServiceImpl implements ProductService{
 	
 	@Override
 	public List selectAll() {
-		// TODO Auto-generated method stub
-		return null;
+		return productDAO.selectAll();
 	}
 	@Override
 	public List selectByAll(int subcategory_id) {
@@ -53,7 +54,7 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public void regist(FileManager fileManager, Product product) {
+	public void regist(FileManager fileManager, Product product) throws ProductRegistException{
 		//db에 넣는 일은 DAO에게 시키고
 		String ext =fileManager.getExtend(product.getRepImg().getOriginalFilename());
 		product.setFilename(ext);
@@ -81,16 +82,15 @@ public class ProductServiceImpl implements ProductService{
 			//기타 옵션 중, 색상 사이즈 넣기(반복문으로...)
 			//사이즈
 			for(Psize psize :product.getPsize()) {
-				logger.debug("당신이 선택한 사이즈는 "+psize.getFit());
 				psize.setProduct_id(product.getProduct_id());
-				//psizeDAO.insert(psize);
+				psizeDAO.insert(psize);
 			}
 			
 			//색상
 			for(Color color:product.getColor()) {
 				logger.debug("당신이 선택한 색상은 "+color.getPicker());
 				color.setProduct_id(product.getProduct_id());
-				//colorDAO.insert(color);
+				colorDAO.insert(color);
 			}
 		}
 		
@@ -99,13 +99,13 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public void update(Product product) {
+	public void update(Product product) throws ProductRegistException{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void delete(int product_id) {
+	public void delete(int product_id) throws ProductRegistException{
 		// TODO Auto-generated method stub
 		
 	}

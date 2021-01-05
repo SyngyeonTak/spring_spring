@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class Product {
 	private int product_id;
-	private int subcategory_id;
+	private SubCategory subCategory;
 	private String product_name;
 	private int price;
 	private String brand;
@@ -19,7 +19,6 @@ public class Product {
 	private MultipartFile[] addImg;//추가 이미지는 선택사항이며 동시에 배열이다.
 	//색상값들, 사이즈 값들, 이미지 값들
 	private Color[] color;
-	
 	//사이즈
 	private Psize[] psize;
 	

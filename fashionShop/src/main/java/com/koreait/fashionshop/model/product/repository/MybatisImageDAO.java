@@ -6,6 +6,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.koreait.fashionshop.exception.ProductRegistException;
 import com.koreait.fashionshop.model.domain.Image;
 
 @Repository
@@ -26,15 +27,18 @@ public class MybatisImageDAO implements ImageDAO{
 		return null;
 	}
 
-	public void insert(Image image) {
-		sessionTemplate.insert("Image.insert", image);
+	public void insert(Image image) throws ProductRegistException{
+		int result = sessionTemplate.insert("Image.insert", image);
+		if(result==0) {
+			throw new ProductRegistException("image 테이블에 입력 실패");
+		}
 	}
 
-	public void update(Image image) {
+	public void update(Image image) throws ProductRegistException{
 		
 	}
 
-	public void delete(int image_id) {
+	public void delete(int image_id) throws ProductRegistException{
 		
 	}
 
