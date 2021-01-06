@@ -21,9 +21,6 @@
 		select * from product order by product_id desc
 	</select>
 	
-	
-	
-	
 	<!--
 		상품 등록
 		filename은 insert가 되고 난 뒤에 설정해주어야 한다. 
@@ -36,6 +33,70 @@
 			select seq_product.currval as product_id from dual		
 		</selectKey>
 	</insert>
+
+	<!-- 지정한 하위 카테고리에 소속된 모든 상품 가져오기 -->	
+	<select id="selectBySubCategoryId" parameterType="int" resultType="Product">
+		select * from product where subcategory_id = #{subcategory_id}
+		order by product_id desc
+	</select>
 	
+	<!-- 상품 상세보기 -->
+	<resultMap type="Product" id="joinPsizeColorScoreImage">
+		<id column="product_id" property="product_id"/>
+		<result column="product_name" property="product_name"/>
+		<result column="price" property="price"/>
+		<result column="brand" property="brand"/>
+		<result column="detail" property="detail"/>
+		<result column="filename" property="filename"/>
+		
+		<association
+			column="product_id"
+			property="score"
+			javaType="Score"
+			select="Score.selectByProductId"/>
+		
+		<!-- 사이즈 -->
+		<collection
+			column="product_id"
+			property="psizeList"
+			javaType="java.util.List"
+			ofType="Psize"
+			select="Psize.selectByProductId"
+			/>
+			
+		<!-- 색상-->
+		<collection
+			column="product_id"
+			property="colorList"
+			javaType="java.util.List"
+			ofType="Color"
+			select="Color.selectByProductId"
+			/>
+			
+		<!-- 이미지-->
+		<collection
+			column="product_id"
+			property="imageList"
+			javaType="java.util.List"
+			ofType="Image"
+			select="Image.selectByProductId"
+			/>
+		
+		
+	</resultMap>
+	
+	<select id="select" resultMap="joinPsizeColorScoreImage" >
+		select * from product where product_id = #{product_id}
+	</select>
 	
 </mapper>
+
+
+
+
+
+
+
+
+
+
