@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.koreait.fashionshop.common.MailSender;
 import com.koreait.fashionshop.common.SecureManager;
 import com.koreait.fashionshop.exception.MailSendException;
+import com.koreait.fashionshop.exception.MemberNotFoundException;
 import com.koreait.fashionshop.exception.MemberRegistException;
 import com.koreait.fashionshop.model.domain.Member;
 import com.koreait.fashionshop.model.member.repository.MemberDAO;
@@ -32,8 +33,12 @@ public class MemberServiceImpl implements MemberService{
 
 	//암호화 객체
 	
-	public Member select(int member_id) {
-		return null;
+	public Member select(Member member) throws MemberNotFoundException{
+		//유저가 전송한 파라미터 비밀번호를 해시값으로 변환하여 아래의 메서드 호출
+		String secureData = secureManager.getSecureData(member.getPassword());
+		member.setPassword(secureData);//VO에 해시값 대입!!
+		
+		return memberDAO.select(member);
 	}
 
 	@Override
